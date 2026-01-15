@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.FoodDeliveryApp" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary brand color -->
+        <item name="colorPrimary">#2D86B8</item>
+        <item name="colorSecondary">#1A73E8</item>
+
+        <!-- Status bar -->
+        <item name="android:statusBarColor">#2D86B8</item>
+    </style>
+
+</resources>
