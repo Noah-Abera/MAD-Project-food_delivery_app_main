@@ -3,6 +3,7 @@ package com.example.food_delivery_app;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -24,44 +25,41 @@ public class SignupActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_signup);
 
-        // Initialize database helper
         databaseHelper = new DatabaseHelper(this);
 
         EditText fullName = findViewById(R.id.inputFullName);
-        EditText email = findViewById(R.id.inputEmail);
-        EditText password = findViewById(R.id.inputPassword);
+        EditText email = findViewById(R.id.inputEmailPhone);
+        EditText password = findViewById(R.id.inputSignupPassword);
         EditText confirm = findViewById(R.id.inputConfirmPassword);
         Button signUp = findViewById(R.id.btnSignUp);
-        TextView loginLink = findViewById(R.id.loginLink);
+        TextView loginLink = findViewById(R.id.loginRedirect);
 
-        // Sign Up button click
         signUp.setOnClickListener(v -> {
             String name = fullName.getText().toString().trim();
-            String emailText = email.getText().toString().trim();
+            String identifier = email.getText().toString().trim();
             String pass = password.getText().toString().trim();
             String confirmPass = confirm.getText().toString().trim();
 
-            // Validation
-            if (name.isEmpty() || emailText.isEmpty() || pass.isEmpty() || confirmPass.isEmpty()) {
+            if (name.isEmpty() || identifier.isEmpty() || pass.isEmpty() || confirmPass.isEmpty()) {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Email validation
-            if (!Patterns.EMAIL_ADDRESS.matcher(emailText).matches()) {
-                Toast.makeText(this, "Please enter a valid email address", Toast.LENGTH_SHORT).show();
+            boolean isEmail = Patterns.EMAIL_ADDRESS.matcher(identifier).matches();
+            boolean isPhone = Patterns.PHONE.matcher(identifier).matches();
+
+            if (!isEmail && !isPhone) {
+                Toast.makeText(this, "Enter a valid email or phone number", Toast.LENGTH_SHORT).show();
                 email.requestFocus();
                 return;
             }
 
-            // Password length validation
             if (pass.length() < 6) {
                 Toast.makeText(this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
                 password.requestFocus();
                 return;
             }
 
-            // Password match validation
             if (!pass.equals(confirmPass)) {
                 Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
                 confirm.setText("");
@@ -69,23 +67,19 @@ public class SignupActivity extends AppCompatActivity {
                 return;
             }
 
-            // Check if email already exists
-            if (databaseHelper.checkEmailExists(emailText)) {
-                Toast.makeText(this, "Email already registered. Please login or use a different email.",
+            if (databaseHelper.checkEmailExists(identifier)) {
+                Toast.makeText(this,
+                        "Account already exists. Please login or use a different email/phone.",
                         Toast.LENGTH_LONG).show();
                 return;
             }
 
-            // Register user
-            boolean isRegistered = databaseHelper.addUser(name, emailText, pass);
+            boolean isRegistered = databaseHelper.addUser(name, identifier, pass);
 
             if (isRegistered) {
                 Toast.makeText(this, "Registration successful! Please login.", Toast.LENGTH_SHORT).show();
-
-                // Navigate back to login page
                 Intent intent = new Intent(SignupActivity.this, MainActivity.class);
-                // Pass the email to pre-fill the login field
-                intent.putExtra("email", emailText);
+                intent.putExtra("email", identifier);
                 startActivity(intent);
                 finish();
             } else {
@@ -93,14 +87,13 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
 
-        // Login link click
         loginLink.setOnClickListener(v -> {
             startActivity(new Intent(this, MainActivity.class));
             finish();
         });
 
-        // Handle window insets
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        View root = findViewById(R.id.signupMain);
+        ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
             return insets;

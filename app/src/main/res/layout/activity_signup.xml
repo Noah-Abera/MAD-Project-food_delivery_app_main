@@ -1,27 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/signupMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#E5E5E5"
-    tools:context=".SignupActivity">
+    android:importantForAccessibility="yes">
 
     <LinearLayout
-        android:id="@+id/centerContainer"
+        android:id="@+id/signupContainer"
         android:layout_width="320dp"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         android:background="#FFFFFF"
         android:orientation="vertical"
         android:padding="32dp"
         android:elevation="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:backgroundTint="#FFFFFF"
+        android:importantForAccessibility="yes">
 
-        <!-- Logo Image -->
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -30,46 +28,27 @@
             android:layout_marginBottom="24dp">
 
             <ImageView
-                android:id="@+id/logoImage"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:id="@+id/signupLogo"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:src="@drawable/app_logo"
                 android:scaleType="fitCenter"
-                android:contentDescription="Gebeta Food Delivery App Logo" />
+                android:contentDescription="App logo" />
 
-            <!-- App Name Text -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="GEBETA"
-                android:textSize="28sp"
+                android:layout_marginTop="12dp"
+                android:text="CREATE ACCOUNT"
+                android:textSize="22sp"
                 android:textStyle="bold"
-                android:textColor="#2D86B8"
-                android:letterSpacing="0.1" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="FOOD DELIVERY"
-                android:textSize="16sp"
-                android:textColor="#666666"
-                android:textStyle="bold" />
+                android:textColor="#2D86B8" />
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Sign Up"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#333333" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
             android:text="Full Name"
             android:textSize="14sp"
             android:textStyle="bold" />
@@ -81,27 +60,35 @@
             android:layout_marginTop="8dp"
             android:background="@drawable/edit_text_background"
             android:padding="12dp"
+            android:hint="Enter full name"
             android:textSize="14sp"
-            android:hint="Enter full name" />
+            android:inputType="textPersonName"
+            android:autofillHints="name" />
+
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Email"
+            android:text="Email / Phone"
             android:textSize="14sp"
             android:textStyle="bold" />
 
+
+
         <EditText
-            android:id="@+id/inputEmail"
+            android:id="@+id/inputEmailPhone"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/edit_text_background"
-            android:inputType="textEmailAddress"
             android:padding="12dp"
-            android:textSize="14sp"
-            android:hint="Enter email address" />
+            android:hint="Enter email or phone number"
+            android:textSize="14sp"/>
+
+
+
+
 
         <TextView
             android:layout_width="wrap_content"
@@ -112,15 +99,17 @@
             android:textStyle="bold" />
 
         <EditText
-            android:id="@+id/inputPassword"
+            android:id="@+id/inputSignupPassword"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/edit_text_background"
-            android:inputType="textPassword"
             android:padding="12dp"
+            android:hint="Create password"
             android:textSize="14sp"
-            android:hint="Enter password" />
+            android:inputType="textPassword"
+            android:autofillHints="newPassword" />
+
 
         <TextView
             android:layout_width="wrap_content"
@@ -136,16 +125,18 @@
             android:layout_height="48dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/edit_text_background"
-            android:inputType="textPassword"
             android:padding="12dp"
+            android:hint="Confirm password"
             android:textSize="14sp"
-            android:hint="Confirm password" />
+            android:inputType="textPassword"
+            android:autofillHints="newPassword" />
+
 
         <Button
             android:id="@+id/btnSignUp"
             android:layout_width="match_parent"
             android:layout_height="55dp"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="24dp"
             android:background="#2D86B8"
             android:text="SIGN UP"
             android:textColor="#FFFFFF"
@@ -153,12 +144,13 @@
             android:textStyle="bold"
             android:elevation="4dp" />
 
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
-            android:layout_marginTop="24dp">
+            android:layout_marginTop="20dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -168,16 +160,18 @@
                 android:textSize="14sp" />
 
             <TextView
-                android:id="@+id/loginLink"
+                android:id="@+id/loginRedirect"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:text="Login"
+                android:text="Log in"
                 android:textColor="#2D86B8"
                 android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:clickable="true"
+                android:focusable="true" />
         </LinearLayout>
 
     </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

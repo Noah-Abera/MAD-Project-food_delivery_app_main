@@ -2,18 +2,19 @@ package com.example.food_delivery_app;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.os.Bundle;  // FIXED: android.os.Bundle
+import android.os.Bundle;
 import android.util.Patterns;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;  // FIXED: EdgeToEdge
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;  // FIXED: WindowInsetsCompat
+import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        // Initialize database helper
         databaseHelper = new DatabaseHelper(this);
 
         EditText inputEmail = findViewById(R.id.inputEmail);
@@ -34,105 +34,112 @@ public class MainActivity extends AppCompatActivity {
         TextView signUp = findViewById(R.id.signUp);
         Button btnLogin = findViewById(R.id.btnLogin);
 
-        // Check if email was passed from signup activity
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("email")) {
-            String email = intent.getStringExtra("email");
-            inputEmail.setText(email);
+            inputEmail.setText(intent.getStringExtra("email"));
             inputPassword.requestFocus();
         }
 
-        // Login button click - SIMPLIFIED
         btnLogin.setOnClickListener(v -> {
-            String email = inputEmail.getText().toString().trim();
+            String identifier = inputEmail.getText().toString().trim();
             String password = inputPassword.getText().toString().trim();
 
-            if (email.isEmpty() || password.isEmpty()) {
-                showErrorDialog("Fields Required", "Please enter both email and password");
+            if (identifier.isEmpty() || password.isEmpty()) {
+                showErrorDialog("Fields Required", "Please enter email/phone and password");
                 return;
             }
 
-            // Validate email format
-            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                showErrorDialog("Invalid Email", "Please enter a valid email address");
+            boolean isEmail = Patterns.EMAIL_ADDRESS.matcher(identifier).matches();
+            boolean isPhone = Patterns.PHONE.matcher(identifier).matches();
+
+            if (!isEmail && !isPhone) {
+                showErrorDialog("Invalid Input", "Please enter a valid email or phone number");
                 inputEmail.requestFocus();
                 return;
             }
 
-            // Check credentials in database
-            boolean isAuthenticated = databaseHelper.authenticateUser(email, password);
+            boolean isAuthenticated = databaseHelper.authenticateUser(identifier, password);
 
             if (isAuthenticated) {
                 Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show();
 
-                // Get user info
-                User user = databaseHelper.getUserByEmail(email);
+                User user = databaseHelper.getUserByEmail(identifier);
 
-                // Navigate to Restaurant List
-                Intent restaurantIntent = new Intent(MainActivity.this, RestaurantListActivity.class);
+                Intent restaurantIntent =
+                        new Intent(MainActivity.this, RestaurantListActivity.class);
+
                 if (user != null) {
                     restaurantIntent.putExtra("user_name", user.getFullName());
                     restaurantIntent.putExtra("user_email", user.getEmail());
                 }
+
                 startActivity(restaurantIntent);
                 finish();
             } else {
-                // Check if email exists
-                boolean emailExists = databaseHelper.checkEmailExists(email);
-                if (emailExists) {
+                boolean exists = databaseHelper.checkEmailExists(identifier);
+
+                if (exists) {
                     showErrorDialog("Login Failed", "Incorrect password. Please try again.");
                     inputPassword.setText("");
                     inputPassword.requestFocus();
                 } else {
                     showErrorDialog("User Not Found",
-                            "No account found with this email. Please sign up first.");
+                            "No account found. Please sign up first.");
                     inputEmail.requestFocus();
                 }
             }
         });
 
-        // Sign Up text click
         signUp.setOnClickListener(v -> {
-            Intent signupIntent = new Intent(MainActivity.this, SignupActivity.class);
-            startActivity(signupIntent);
+            startActivity(new Intent(MainActivity.this, SignupActivity.class));
         });
 
-        // Forgot Password text click - SIMPLIFIED
         forgotPassword.setOnClickListener(v -> {
-            String email = inputEmail.getText().toString().trim();
-            if (email.isEmpty()) {
-                showErrorDialog("Email Required", "Please enter your email address first");
+            String identifier = inputEmail.getText().toString().trim();
+
+            if (identifier.isEmpty()) {
+                showErrorDialog("Required", "Please enter email or phone number first");
                 inputEmail.requestFocus();
-            } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                showErrorDialog("Invalid Email", "Please enter a valid email address");
+                return;
+            }
+
+            boolean isEmail = Patterns.EMAIL_ADDRESS.matcher(identifier).matches();
+            boolean isPhone = Patterns.PHONE.matcher(identifier).matches();
+
+            if (!isEmail && !isPhone) {
+                showErrorDialog("Invalid Input", "Enter a valid email or phone number");
                 inputEmail.requestFocus();
-            } else if (databaseHelper.checkEmailExists(email)) {
-                // In a real app, you would send a reset link here
+                return;
+            }
+
+            if (databaseHelper.checkEmailExists(identifier)) {
                 Toast.makeText(this,
-                        "Password reset instructions sent to " + email,
+                        "Password recovery instructions sent",
                         Toast.LENGTH_LONG).show();
             } else {
-                showErrorDialog("Email Not Found",
-                        "No account found with this email. Please sign up first.");
+                showErrorDialog("Not Found",
+                        "No account found. Please sign up first.");
             }
         });
 
-        // Handle window insets
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        View root = findViewById(R.id.main);
+        if (root == null) {
+            root = findViewById(android.R.id.content);
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
             return insets;
         });
     }
 
-    // Method to show error dialog
     private void showErrorDialog(String title, String message) {
         new AlertDialog.Builder(this)
                 .setTitle(title)
                 .setMessage(message)
                 .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
                 .setCancelable(false)
-                .create()
                 .show();
     }
 
